@@ -1,0 +1,92 @@
+<mujoco model="nine to fly — desk">
+  <include file="../vendor/menagerie/flybody/fruitfly.xml"/>
+
+  <!--
+    Everything here is proportioned to the fly, not to a human office.
+    Reference points from the model: thorax at z=0, feet at z=-0.132 in the
+    default stance, body ~0.29 long, leg span ~0.38 wide.
+
+    So the chair seat has to be wider than 0.38 for the fly to stand on it,
+    and the desk surface sits just below thorax height so the forelegs can
+    reach the keys.
+  -->
+
+  <visual>
+    <global offwidth="3840" offheight="2160" azimuth="140" elevation="-20"/>
+    <quality shadowsize="8192" offsamples="24"/>
+    <headlight ambient="0.40 0.41 0.45" diffuse="0.50 0.50 0.54" specular="0.15 0.15 0.15"/>
+    <map stiffness="1e+04" stiffnessrot="5e+04" force="2e-05" shadowclip="2" shadowscale="1.2"/>
+    <scale jointwidth="0.01" framewidth="0.01"/>
+  </visual>
+
+  <statistic meansize="0.02" extent="1.4" center="0.20 0 -0.10"/>
+
+  <asset>
+    <texture name="skybox" type="skybox" builtin="gradient"
+             rgb1="0.06 0.07 0.10" rgb2="0.01 0.01 0.02" width="256" height="256"/>
+    <material name="floor_mat"  rgba="0.08 0.09 0.11 1" reflectance="0.14" specular="0.25" shininess="0.35"/>
+    <material name="desk_mat"   rgba="0.24 0.18 0.13 1" reflectance="0.06" specular="0.3"  shininess="0.4"/>
+    <material name="metal_mat"  rgba="0.15 0.16 0.19 1" reflectance="0.28" specular="0.65" shininess="0.75"/>
+    <material name="chair_mat"  rgba="0.12 0.13 0.16 1" reflectance="0.05" specular="0.25" shininess="0.25"/>
+    <material name="shell_mat"  rgba="0.24 0.25 0.29 1" reflectance="0.32" specular="0.7"  shininess="0.8"/>
+    <material name="screen_mat" rgba="0.30 0.56 0.78 1" emission="0.42" specular="0.1"/>
+    <material name="mug_mat"    rgba="0.58 0.22 0.17 1" specular="0.4"  shininess="0.45"/>
+  </asset>
+
+  <worldbody>
+    <light name="key"   pos="0.95 -0.75 0.85" dir="-0.6 0.5 -0.62" diffuse="1.25 1.14 0.96"
+           specular="0.28 0.28 0.28" castshadow="true"/>
+    <light name="fill"  pos="-0.85 0.85 0.55" dir="0.55 -0.55 -0.45" diffuse="0.50 0.58 0.74"
+           specular="0.05 0.05 0.05" castshadow="false"/>
+    <light name="spill" pos="0.33 0 0.03"     dir="-1 0 -0.3" diffuse="0.62 0.86 1.10"
+           specular="0.1 0.1 0.1" castshadow="false"/>
+
+    <geom name="floor" type="plane" size="8 8 0.1" pos="0 0 -0.78" material="floor_mat"/>
+
+    <body name="desk" pos="0.46 0 0">
+      <geom name="desk_top"  type="box" size="0.34 0.52 0.013" pos="0 0 -0.058" material="desk_mat"/>
+      <geom name="desk_edge" type="box" size="0.34 0.013 0.024" pos="0 -0.52 -0.078" material="desk_mat"/>
+      <geom name="desk_lgA"  type="box" size="0.018 0.018 0.33" pos="-0.29 -0.45 -0.40" material="metal_mat"/>
+      <geom name="desk_lgB"  type="box" size="0.018 0.018 0.33" pos="-0.29  0.45 -0.40" material="metal_mat"/>
+      <geom name="desk_lgC"  type="box" size="0.018 0.018 0.33" pos=" 0.29 -0.45 -0.40" material="metal_mat"/>
+      <geom name="desk_lgD"  type="box" size="0.018 0.018 0.33" pos=" 0.29  0.45 -0.40" material="metal_mat"/>
+    </body>
+
+    <body name="laptop" pos="0.195 0 -0.045">
+      <geom name="lap_base"   type="box" size="0.075 0.098 0.005" pos="0 0 0" material="shell_mat"/>
+      <geom name="lap_keys"   type="box" size="0.062 0.082 0.001" pos="-0.004 0 0.006" material="metal_mat"/>
+      <geom name="lap_lid"    type="box" size="0.068 0.098 0.004" pos="0.084 0 0.064"
+            euler="0 1.30 0" material="shell_mat"/>
+      <geom name="lap_screen" type="box" size="0.059 0.086 0.001" pos="0.077 0 0.063"
+            euler="0 1.30 0" material="screen_mat"/>
+    </body>
+
+    <body name="chair" pos="-0.02 0 0">
+      <geom name="seat"      type="box"      size="0.21 0.225 0.011" pos="0 0 -0.143" material="chair_mat"/>
+      <geom name="seat_lip"  type="cylinder" size="0.225 0.011"      pos="0.15 0 -0.145"
+            euler="1.5708 0 0" material="chair_mat"/>
+      <geom name="back"      type="box"      size="0.014 0.195 0.15" pos="-0.235 0 0.010"
+            euler="0 0.22 0" material="chair_mat"/>
+      <geom name="back_post" type="box"      size="0.026 0.04 0.05"  pos="-0.205 0 -0.115" material="metal_mat"/>
+      <geom name="post"      type="cylinder" size="0.024 0.145"      pos="0 0 -0.30" material="metal_mat"/>
+      <geom name="hub"       type="cylinder" size="0.045 0.016"      pos="0 0 -0.455" material="metal_mat"/>
+      <geom name="spoke_a"   type="capsule"  size="0.011" fromto="0 0 -0.462  0.20 0 -0.505" material="metal_mat"/>
+      <geom name="spoke_b"   type="capsule"  size="0.011" fromto="0 0 -0.462 -0.10 0.175 -0.505" material="metal_mat"/>
+      <geom name="spoke_c"   type="capsule"  size="0.011" fromto="0 0 -0.462 -0.10 -0.175 -0.505" material="metal_mat"/>
+      <geom name="spoke_d"   type="capsule"  size="0.011" fromto="0 0 -0.462  0.06 0.20 -0.505" material="metal_mat"/>
+      <geom name="spoke_e"   type="capsule"  size="0.011" fromto="0 0 -0.462  0.06 -0.20 -0.505" material="metal_mat"/>
+      <geom name="cast_a"    type="sphere"   size="0.018" pos="0.20 0 -0.518" material="metal_mat"/>
+      <geom name="cast_b"    type="sphere"   size="0.018" pos="-0.10 0.175 -0.518" material="metal_mat"/>
+      <geom name="cast_c"    type="sphere"   size="0.018" pos="-0.10 -0.175 -0.518" material="metal_mat"/>
+      <geom name="cast_d"    type="sphere"   size="0.018" pos="0.06 0.20 -0.518" material="metal_mat"/>
+      <geom name="cast_e"    type="sphere"   size="0.018" pos="0.06 -0.20 -0.518" material="metal_mat"/>
+    </body>
+
+    <body name="mug" pos="0.62 -0.34 -0.012">
+      <geom name="mug_body" type="cylinder" size="0.036 0.033" pos="0 0 0" material="mug_mat"/>
+      <geom name="mug_h1" type="capsule" size="0.005" fromto="0.032 0 0.016  0.054 0 0.012" material="mug_mat"/>
+      <geom name="mug_h2" type="capsule" size="0.005" fromto="0.054 0 0.012  0.054 0 -0.012" material="mug_mat"/>
+      <geom name="mug_h3" type="capsule" size="0.005" fromto="0.054 0 -0.012  0.032 0 -0.016" material="mug_mat"/>
+    </body>
+  </worldbody>
+</mujoco>

@@ -1,0 +1,18 @@
+# Vendored model (137 MB of meshes) - fetched by `make model`
+vendor/
+scenes/assets
+
+# Raw connectome downloads (~550 MB) - fetched by `make data`
+data/raw/
+# Intermediate extraction output - rebuilt by `make circuit`
+data/circuit/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Full-resolution stills - regenerate with `make renders`
+renders/
+
+.DS_Store
