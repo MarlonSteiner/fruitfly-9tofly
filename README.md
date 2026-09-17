@@ -1,7 +1,7 @@
-# 9 to Fly
+# fruitfly-9tofly
 
-A fruit fly works in sales. The phone rings, its Giant Fiber fires, and it
-leaves the chair.
+**9 to Fly** — a fruit fly works in sales. The phone rings, its Giant Fiber
+fires, and it leaves the chair.
 
 ![The fly at its desk](web/frames/working.jpg)
 
@@ -241,6 +241,7 @@ flybody (MuJoCo, Apache-2.0)
 ## Run it
 
 ```bash
+git clone <this repo> && cd fruitfly-9tofly
 make venv     # dependencies
 make data     # MaleCNS downloads, ~550 MB, public, no account needed
 make model    # flybody model, ~140 MB

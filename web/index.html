@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nine to Fly</title>
+<title>9 to Fly</title>
 <style>
   :root{
     --bg:#000;
@@ -69,19 +69,19 @@
          display:grid;place-items:center;font-size:10px;opacity:.85}
 
   /* ---- brain panel, bottom right ---- */
-  .brain{position:absolute;right:44px;bottom:52px;z-index:6;width:400px;
+  .brain{position:absolute;right:44px;bottom:52px;z-index:6;width:258px;
          background:rgba(8,9,11,.82);backdrop-filter:blur(14px);
          border:1px solid var(--line);border-radius:12px;overflow:hidden}
   .brain .bar{display:flex;align-items:baseline;gap:8px;
-              padding:13px 16px 11px;border-bottom:1px solid rgba(255,255,255,.08)}
-  .brain .ttl{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-  .brain .val{margin-left:auto;font-family:var(--mono);font-size:19px;
+              padding:10px 13px 8px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .brain .ttl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .brain .val{margin-left:auto;font-family:var(--mono);font-size:15px;
               font-variant-numeric:tabular-nums;color:var(--amber);line-height:1}
-  .brain .cwrap{position:relative;height:250px}
+  .brain .cwrap{position:relative;height:138px}
   .brain canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-  #trace{height:40px;border-top:1px solid rgba(255,255,255,.08)}
-  .brain .foot{display:flex;gap:14px;padding:10px 16px 12px;font-size:10px;
-               color:var(--dim);line-height:1.5}
+  #trace{height:30px;border-top:1px solid rgba(255,255,255,.08)}
+  .brain .foot{display:flex;gap:10px;padding:8px 13px 10px;font-size:8.5px;
+               color:var(--dim);line-height:1.45}
   .dot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:6px;
        vertical-align:middle}
   .dot.real{background:#3ddc84}
@@ -93,8 +93,8 @@
   .stage.alert .status{opacity:1;color:var(--amber)}
 
   @media (max-width:900px){
-    .brain{right:16px;bottom:16px;width:270px}
-    .copy{left:24px;bottom:300px;max-width:70%}
+    .brain{right:14px;bottom:14px;width:210px}
+    .copy{left:24px;bottom:240px;max-width:70%}
     .contact{display:none}
     header{padding:20px 24px}
     nav{display:none}
@@ -145,7 +145,7 @@
       <span class="val" id="gf-val">0 Hz</span>
     </div>
     <div class="cwrap"><canvas id="brain"></canvas></div>
-    <div class="trace" id="tracewrap" style="position:relative;height:40px;
+    <div class="trace" id="tracewrap" style="position:relative;height:30px;
          border-top:1px solid rgba(255,255,255,.08)">
       <canvas id="trace"></canvas>
     </div>
@@ -363,7 +363,7 @@ function drawBrain(){
   if(!cells.length) return;
 
   // fit the CNS into the panel without distorting it
-  const pad=14, aw=w-pad*2, ah=h-pad*2;
+  const pad=8, aw=w-pad*2, ah=h-pad*2;
   const k=Math.min(aw/extent[0], ah/extent[1]);
   const ox=(w-extent[0]*k)/2, oy=(h-extent[1]*k)/2;
   const sx=v=>ox+v*k, sy=v=>oy+(extent[1]-v)*k;
