@@ -108,19 +108,33 @@ def main():
         iio.imwrite(OUT / "working.jpg", r.render(), quality=92)
         print("wrote working.jpg")
 
-        # startle: 14 frames, up and back down
-        n = 14
+        # Startle: takeoff, airborne, land, settle back to the working pose.
+        #
+        # The first version ran the pose blend to fully-startled on the final
+        # frame and then cut straight back to working.jpg, so every cycle
+        # ended in a hard snap. It read as a glitch because it was one.
+        n = 22
         for i in range(n):
             t = i / (n - 1)
             # screen flares hard at the incident, then settles back
-            flare = min(1.0, t * 3.0) * (1.0 - max(0.0, (t - 0.55) / 0.45) * 0.55)
+            flare = min(1.0, t / 0.18) * (1.0 - max(0.0, (t - 0.45) / 0.55) * 0.85)
             set_screen(model, {
                 k: tuple(np.array(CALM[k]) * (1 - flare) + np.array(ALERT[k]) * flare)
                 if isinstance(CALM[k], tuple) else CALM[k] * (1 - flare) + ALERT[k] * flare
                 for k in CALM
             })
-            lift = np.sin(min(1.0, t * 1.25) * np.pi) * 0.105
-            amount = min(1.0, t * 2.2)
+            # Arc: leaves the chair, peaks, comes back down by 78% through.
+            lift = np.sin(min(1.0, t / 0.78) * np.pi) * 0.105
+
+            # Posture: snaps open on takeoff, holds while airborne, then eases
+            # back to the working pose so the last frame matches working.jpg.
+            if t < 0.18:
+                amount = t / 0.18
+            elif t < 0.55:
+                amount = 1.0
+            else:
+                ease = (t - 0.55) / 0.45
+                amount = 1.0 - (ease * ease * (3 - 2 * ease))   # smoothstep
             pose(
                 model, data,
                 blend(WORKING, STARTLED, amount),

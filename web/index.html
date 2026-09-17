@@ -87,10 +87,11 @@
   .dot.real{background:#3ddc84}
   .dot.assumed{background:#565c66}
 
-  .status{position:absolute;left:44px;top:50%;z-index:5;font-size:11px;
-          letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
-          opacity:0;transition:opacity .25s}
-  .stage.alert .status{opacity:1;color:var(--amber)}
+  /* Reserved height, so the label appearing never nudges the headline. */
+  .status{height:16px;margin-bottom:6px;font-size:11px;
+          letter-spacing:.16em;text-transform:uppercase;color:var(--amber);
+          opacity:0;transition:opacity .2s}
+  .stage.alert .status{opacity:1}
 
   @media (max-width:900px){
     .brain{right:14px;bottom:14px;width:210px}
@@ -118,16 +119,15 @@
       <span><b id="s-nt">—</b> measured transmitters</span>
     </nav>
     <a class="contact" href="https://marlonsteiner.studio" target="_blank" rel="noopener">
-      Connect with the developer <span class="arrow">&rarr;</span>
+      Developer <span class="arrow">&rarr;</span>
     </a>
   </header>
 
-  <div class="status" id="status">Giant Fiber fired</div>
-
   <div class="copy">
+    <div class="status" id="status">Giant Fiber fired</div>
     <div class="eyebrow">MaleCNS v1.0 &middot; Johnston&rsquo;s Organ &rarr; Giant Fiber</div>
-    <h1>The fly works in sales.</h1>
-    <p>Cold calls, night shift. The fly&rsquo;s ear &mdash; Johnston&rsquo;s Organ &mdash;
+    <h1>The fruit fly works in sales.</h1>
+    <p>Cold calls, night shift. The fruit fly&rsquo;s ear &mdash; Johnston&rsquo;s Organ &mdash;
        puts 709 synapses onto its Giant Fiber, the neuron that fires the escape
        jump. So when the phone rings, it genuinely startles. That neuron is why
        you miss when you swat.</p>
@@ -186,8 +186,8 @@ const AMBIENT = 0.88;
 const QUIET   = 0.72;
 const RING_DRIVE  = 0.55;   // how hard the ring drives the ear
 
-const STARTLE_FRAMES = 14;
-const FRAME_HOLD = 3;
+const STARTLE_FRAMES = 22;
+const FRAME_HOLD = 2;
 
 let N=0, pre, post, wgt, neurons=[];
 let v, iSyn, spikes, refrac, act;
@@ -325,7 +325,10 @@ function step(){
   else if(settle > 0) settle--;
   else if(gfSpikes > 0){
     fireTimer = STARTLE_FRAMES*FRAME_HOLD;
-    settle = 45;
+    // Long enough that one ring reads as one startle. The circuit keeps
+    // firing after the drive stops, and re-triggering every time the
+    // animation ends looked like a stutter.
+    settle = 150;
     jumps++;
   }
 }
