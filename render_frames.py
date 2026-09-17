@@ -145,6 +145,16 @@ def main():
             iio.imwrite(OUT / f"startle_{i:02d}.jpg", r.render(), quality=88)
         print(f"wrote {n} startle frames")
 
+    # Social card: 1280x640 is GitHub's recommended social preview size and
+    # close enough to Open Graph's 1.91:1 to serve both.
+    set_screen(model, CALM)
+    pose(model, data, WORKING)
+    with mujoco.Renderer(model, height=640, width=1280) as r:
+        cam = camera(**{**CAM, "dist": CAM["dist"] * 1.06})
+        r.update_scene(data, camera=cam)
+        iio.imwrite(Path("web") / "social.jpg", r.render(), quality=90)
+    print("wrote web/social.jpg (1280x640)")
+
     total = sum(f.stat().st_size for f in OUT.glob("*.jpg"))
     print(f"total {total/1e6:.1f} MB")
 
