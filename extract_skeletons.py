@@ -32,7 +32,7 @@ CACHE = Path("data/skeletons")
 OUT = Path("web/skeletons.json")
 
 # How many of each to draw. More looks denser but costs bytes.
-SAMPLE = {"DNp01": 2, "LC4": 22, "LPLC2": 22}
+SAMPLE = {"DNp01": 2, "LC4": 20, "LPLC2": 20, "JO-B1_a": 10, "JO-B1_c": 6}
 INHIBITORY = 16          # strongest GABA/glutamate inputs to the Giant Fiber
 MAX_SEGMENTS = 260       # per neuron, after decimation
 
@@ -75,7 +75,9 @@ def pick_neurons():
     chosen = []
     for cell_type, n in SAMPLE.items():
         ids = ann[ann["type"] == cell_type]["bodyId"].tolist()[:n]
-        role = "command" if cell_type == "DNp01" else "looming"
+        role = ("command" if cell_type == "DNp01"
+                else "auditory" if cell_type.startswith("JO")
+                else "looming")
         chosen += [(int(i), cell_type, role) for i in ids]
 
     # strongest inhibitory inputs onto the Giant Fiber

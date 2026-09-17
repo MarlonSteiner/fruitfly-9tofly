@@ -30,6 +30,9 @@
     <material name="chair_mat"  rgba="0.055 0.062 0.078 1" reflectance="0.04" specular="0.18" shininess="0.2"/>
     <material name="shell_mat"  rgba="0.24 0.25 0.29 1" reflectance="0.32" specular="0.7"  shininess="0.8"/>
     <material name="screen_mat" rgba="0.30 0.56 0.78 1" emission="0.42" specular="0.1"/>
+    <material name="phone_mat" rgba="0.20 0.21 0.25 1" reflectance="0.26" specular="0.6" shininess="0.65"/>
+    <material name="phone_key" rgba="0.34 0.35 0.38 1" specular="0.3" shininess="0.3"/>
+    <material name="phone_led" rgba="0.95 0.32 0.22 1" emission="0.15" specular="0.2"/>
     <material name="paper_mat" rgba="0.86 0.85 0.82 1" specular="0.12" shininess="0.1"/>
     <material name="paper_edge" rgba="0.70 0.69 0.66 1" specular="0.1" shininess="0.1"/>
     <material name="mug_mat"    rgba="0.58 0.22 0.17 1" specular="0.4"  shininess="0.45"/>
@@ -40,6 +43,8 @@
            specular="0.28 0.28 0.28" castshadow="true"/>
     <light name="fill"  pos="-0.85 0.85 0.55" dir="0.55 -0.55 -0.45" diffuse="0.50 0.58 0.74"
            specular="0.05 0.05 0.05" castshadow="false"/>
+    <light name="deskfill" pos="0.30 1.10 0.45" dir="0 -1 -0.4" diffuse="0.26 0.28 0.34"
+           specular="0.08 0.08 0.08" castshadow="false"/>
     <light name="spill" pos="0.30 0 0.02"  dir="-1 0 -0.25" diffuse="0.62 0.86 1.10"
            specular="0.1 0.1 0.1" castshadow="false"/>
     <light name="glow"  pos="0.26 0 0.05"  dir="-1 0 -0.15" diffuse="0.40 0.60 0.85"
@@ -86,8 +91,20 @@
       <geom name="cast_e"    type="sphere"   size="0.018" pos="0.06 -0.20 -0.518" material="metal_mat"/>
     </body>
 
+    <!-- ===== desk phone: the fly works in sales ===== -->
+    <body name="phone" pos="0.255 0.345 -0.040">
+      <geom name="ph_base"  type="box" size="0.064 0.084 0.011" pos="0 0 0" euler="0 0 -0.22" material="phone_mat"/>
+      <geom name="ph_keys"  type="box" size="0.032 0.041 0.001" pos="0.014 -0.018 0.012" euler="0 0 -0.22" material="phone_key"/>
+      <geom name="ph_led"   type="box" size="0.006 0.009 0.001" pos="-0.034 0.052 0.012" euler="0 0 -0.22" material="phone_led"/>
+      <geom name="ph_crad1" type="box" size="0.014 0.076 0.007" pos="-0.040 0.010 0.017" euler="0 0 -0.22" material="phone_mat"/>
+      <!-- handset resting in the cradle -->
+      <geom name="ph_hand"  type="box"      size="0.019 0.072 0.010" pos="-0.040 0.010 0.030" euler="0 0 -0.22" material="phone_mat"/>
+      <geom name="ph_ear"   type="cylinder" size="0.016 0.007"       pos="-0.055 0.070 0.032" euler="1.5708 0 -0.22" material="phone_mat"/>
+      <geom name="ph_mic"   type="cylinder" size="0.016 0.007"       pos="-0.025 -0.050 0.032" euler="1.5708 0 -0.22" material="phone_mat"/>
+    </body>
+
     <!-- ===== the paperwork ===== -->
-    <body name="paper" pos="0.40 0.28 -0.040">
+    <body name="paper" pos="0.545 0.285 -0.040">
       <geom name="pg1" type="box" size="0.080 0.100 0.0016" pos="0 0 0.000"  euler="0 0 0.05"  material="paper_mat"/>
       <geom name="pg2" type="box" size="0.080 0.100 0.0016" pos="0.003 -0.004 0.0034" euler="0 0 -0.04" material="paper_edge"/>
       <geom name="pg3" type="box" size="0.080 0.100 0.0016" pos="-0.002 0.003 0.0068" euler="0 0 0.07" material="paper_mat"/>

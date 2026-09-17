@@ -31,6 +31,12 @@ OUT = Path("data/circuit")
 SEED_TYPE = "DNp01"          # Giant Fiber, the escape command neuron
 LOOMING = ["LC4", "LPLC2"]   # looming detectors, tagged for the UI
 
+# Johnston's Organ is the fly's ear. These neurons carry sound and substrate
+# vibration, and they synapse directly onto the Giant Fiber -- 709 synapses in
+# this circuit. A fly startles at a sudden noise for the same reason it
+# startles at a shadow.
+AUDITORY_PREFIX = "JO"
+
 # Minimum synapse count for an edge to be kept. Connectomes are full of
 # 1-2 synapse connections that are mostly reconstruction noise rather than
 # real biology; ~5 is the conventional cutoff.
@@ -95,6 +101,8 @@ def role_of(neuron_type):
         return "command"
     if neuron_type in LOOMING:
         return "looming"
+    if isinstance(neuron_type, str) and neuron_type.startswith(AUDITORY_PREFIX):
+        return "auditory"
     return "input"
 
 
@@ -176,6 +184,7 @@ def main():
             ),
             "seed_type": SEED_TYPE,
             "looming_types": LOOMING,
+            "auditory_prefix": AUDITORY_PREFIX,
             "neurons": len(neurons),
             "edges": len(edges),
             "synapses": int(edges["weight"].sum()),

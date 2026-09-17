@@ -1,7 +1,7 @@
 # 9 to Fly
 
-A fruit fly works a night shift. When something spikes, its Giant Fiber fires
-and it leaves the chair.
+A fruit fly works in sales. The phone rings, its Giant Fiber fires, and it
+leaves the chair.
 
 ![The fly at its desk](web/frames/working.jpg)
 
@@ -94,14 +94,42 @@ So the honest claim is narrower than "the fly sees and jumps":
 Which is why the fly's job here is monitoring. A threshold detector is used as
 a threshold detector.
 
+## Why a ringing phone
+
+Johnston's Organ is the fly's ear. Twenty of its neurons sit inside this
+circuit and put **709 synapses directly onto the Giant Fiber**, so a fly
+startling at a sudden noise and a fly startling at a shadow are the same
+circuit doing the same thing. That is why cold calling works as a framing and
+not just as a joke.
+
+But measured honestly, the ear is **1.7% of the Giant Fiber's total input**
+against 31.4% from the looming population. Even firing at the refractory limit
+of 333 Hz it delivers 0.29 of current against a threshold of 1.0:
+
+```
+looming    302 neurons -> 31.4% of GF input   1.57 at 100 Hz
+auditory    20 neurons ->  1.7% of GF input   0.09 at 100 Hz, 0.29 at 333 Hz
+```
+
+**The ear alone cannot fire the Giant Fiber in this model at any volume.**
+
+A desk phone is also a visible event — a blinking light, a handset that moves,
+a surface that buzzes — so the ring drives the visual channel as well, and that
+is what actually crosses threshold. Stated plainly because it would be easy to
+imply the sound is doing the work when it is not. The limitation is uniform
+synaptic gain here, not a claim about real flies: a real fly does escape from
+sound.
+
 ## The brain panel
 
 The neurons in the corner panel are real traced morphologies, not a diagram.
-`extract_skeletons.py` pulls 62 reconstructed skeletons from
-`gs://flyem-male-cns/v1.0/segmentation/skeletons-malecns/` -- the Giant Fibers,
-a sample of LC4 and LPLC2, and the strongest GABAergic and glutamatergic
-inputs -- decimates each to ~260 segments, and projects them to a frontal
-view. Every branch you see was reconstructed from electron microscopy.
+`extract_skeletons.py` pulls 74 reconstructed skeletons from
+`gs://flyem-male-cns/v1.0/segmentation/skeletons-malecns/` — the Giant Fibers,
+a sample of LC4 and LPLC2, the Johnston's Organ neurons, and the strongest
+GABAergic and glutamatergic inputs — decimates each to ~260 segments, and
+projects them to a frontal view. Every branch you see was reconstructed from
+electron microscopy. Blue is visual, violet is auditory, red is inhibitory,
+amber is the Giant Fiber.
 
 Each drawn skeleton is bound to a live neuron of the same role, so the
 morphology brightens with that cell's activity as the simulation runs.
@@ -198,7 +226,7 @@ MaleCNS v1.0 (Feather, ~550 MB)
   -> extract_circuit.py   seed DNp01, recruit inputs, sign edges from
                           neurotransmitters, threshold at 5 synapses
   -> export_web.py        pack to 412 KB with real soma coordinates
-  -> extract_skeletons.py 62 traced morphologies -> 447 KB of line segments
+  -> extract_skeletons.py 74 traced morphologies -> 492 KB of line segments
   -> web/                 browser runs the circuit live; no API key, no account
 ```
 

@@ -104,7 +104,7 @@
 <body>
 
 <div class="stage" id="stage">
-  <img id="fly" alt="A fruit fly at a desk, working a night shift">
+  <img id="fly" alt="A fruit fly at a desk with a phone, working a night shift">
   <div class="scrim top"></div>
   <div class="scrim left"></div>
   <div class="scrim bottom"></div>
@@ -125,16 +125,17 @@
   <div class="status" id="status">Giant Fiber fired</div>
 
   <div class="copy">
-    <div class="eyebrow">MaleCNS v1.0 &middot; Giant Fiber escape circuit</div>
-    <h1>The fly is on call tonight.</h1>
-    <p>809 real neurons wired the way they are in an actual fruit fly. When
-       excitation outruns inhibition, the Giant Fiber fires &mdash; and the
-       fly leaves its chair. That neuron is why you miss when you swat.</p>
+    <div class="eyebrow">MaleCNS v1.0 &middot; Johnston&rsquo;s Organ &rarr; Giant Fiber</div>
+    <h1>The fly works in sales.</h1>
+    <p>Cold calls, night shift. The fly&rsquo;s ear &mdash; Johnston&rsquo;s Organ &mdash;
+       puts 709 synapses onto its Giant Fiber, the neuron that fires the escape
+       jump. So when the phone rings, it genuinely startles. That neuron is why
+       you miss when you swat.</p>
     <div class="actions">
       <button class="primary" id="btn-incident">
-        Trigger incident <span class="arrow">&rarr;</span>
+        Ring the phone <span class="arrow">&rarr;</span>
       </button>
-      <button id="btn-quiet">Quiet hours</button>
+      <button id="btn-quiet">Do not disturb</button>
     </div>
   </div>
 
@@ -183,14 +184,14 @@ const S_DECAY = Math.exp(-DT / TAU_S);
 // under it and an incident pushes it over.
 const AMBIENT = 0.88;
 const QUIET   = 0.72;
-const SPIKE_DRIVE = 0.55;
+const RING_DRIVE  = 0.55;   // how hard the ring drives the ear
 
 const STARTLE_FRAMES = 14;
 const FRAME_HOLD = 3;
 
 let N=0, pre, post, wgt, neurons=[];
 let v, iSyn, spikes, refrac, act;
-let loomIdx=[], gfIdx=[];
+let loomIdx=[], audIdx=[], gfIdx=[];
 let gf=0, trace=new Array(200).fill(0);
 let fireTimer=0, settle=0, jumps=0;
 let quiet=false, incident=0;
@@ -213,8 +214,9 @@ function preload(){
 
 async function load(){
   const [data, skel] = await Promise.all([
-    fetch('circuit.json').then(r=>r.json()),
-    fetch('skeletons.json').then(r=>r.json()).catch(()=>({cells:[]})),
+    // no-cache so a data rebuild is picked up by returning visitors
+    fetch('circuit.json', {cache:'no-cache'}).then(r=>r.json()),
+    fetch('skeletons.json', {cache:'no-cache'}).then(r=>r.json()).catch(()=>({cells:[]})),
     preload(),
   ]);
   cells = skel.cells || [];
@@ -229,12 +231,14 @@ async function load(){
   spikes=new Float32Array(N); refrac=new Float32Array(N); act=new Float32Array(N);
 
   neurons.forEach((n,i)=>{
-    if(n.r==='looming') loomIdx.push(i);
-    if(n.r==='command') gfIdx.push(i);
+    if(n.r==='looming')  loomIdx.push(i);
+    if(n.r==='auditory') audIdx.push(i);
+    if(n.r==='command')  gfIdx.push(i);
   });
 
   const pool = {
     looming: loomIdx,
+    auditory: audIdx.length ? audIdx : loomIdx,
     command: gfIdx,
     inhibitory: neurons.map((n,i)=>n.s<0?i:-1).filter(i=>i>=0),
   };
@@ -252,7 +256,7 @@ async function load(){
   requestAnimationFrame(loop);
 }
 
-function substep(drive){
+function substep(drive, ring){
   // synaptic current decays, then takes this step's spikes
   for(let i=0;i<N;i++) iSyn[i] *= S_DECAY;
   for(let e=0;e<pre.length;e++){
@@ -263,7 +267,22 @@ function substep(drive){
   let gfSpikes = 0;
   for(let i=0;i<N;i++){
     let I = iSyn[i];
-    if(neurons[i].r === 'looming') I += drive * (0.75 + Math.random()*0.5);
+    const role = neurons[i].r;
+    // Ambient office light and movement keeps the visual side ticking over.
+    if(role === 'looming')  I += drive * (0.75 + Math.random()*0.5);
+    // A ringing phone is a sound, and Johnston's Organ -- the fly's ear --
+    // synapses straight onto the Giant Fiber, 709 synapses in this circuit.
+    //
+    // But measured honestly the ear is only 1.7% of the Giant Fiber's input.
+    // Even firing at the refractory limit it delivers 0.29 against a
+    // threshold of 1.0, so the ear ALONE cannot fire that neuron here at any
+    // volume. A desk phone is also a visible event -- a blinking light, a
+    // handset that moves, a surface that buzzes -- so the ring drives the
+    // visual channel too, and that is what actually crosses threshold.
+    // The limitation is uniform synaptic gain in this model, not a claim
+    // about real flies.
+    if(role === 'auditory') I += (drive + ring * 2.0) * (0.75 + Math.random()*0.5);
+    if(role === 'looming' && ring > 0) I += ring * (0.75 + Math.random()*0.5);
 
     if(refrac[i] > 0){ refrac[i] -= DT; v[i] = 0; spikes[i] = 0; continue; }
 
@@ -280,11 +299,12 @@ function substep(drive){
 }
 
 function step(){
-  let drive = quiet ? QUIET : AMBIENT;
-  if(incident > 0){ drive += SPIKE_DRIVE * Math.min(1, incident/8); incident--; }
+  const drive = quiet ? QUIET : AMBIENT;
+  let ring = 0;
+  if(incident > 0){ ring = RING_DRIVE * Math.min(1, incident/8); incident--; }
 
   let gfSpikes = 0;
-  for(let k=0;k<SUBSTEPS;k++) gfSpikes += substep(drive);
+  for(let k=0;k<SUBSTEPS;k++) gfSpikes += substep(drive, ring);
 
   // decaying trace per neuron, for the glow
   for(let i=0;i<N;i++) act[i] *= 0.90;
@@ -351,8 +371,9 @@ function drawBrain(){
   bctx.lineCap='round';
   for(const c of cells){
     const a=Math.abs(act[c.i]||0);
-    const col = c.r==='command' ? '255,178,36'
+    const col = c.r==='command'    ? '255,178,36'
               : c.r==='inhibitory' ? '255,96,96'
+              : c.r==='auditory'   ? '186,148,255'
               : '86,214,255';
     bctx.beginPath();
     const seg=c.s;
@@ -390,7 +411,7 @@ function loop(){
 document.getElementById('btn-incident').onclick = ()=>{ incident=20; };
 document.getElementById('btn-quiet').onclick = e=>{
   quiet=!quiet;
-  e.currentTarget.textContent = quiet ? 'Back on call' : 'Quiet hours';
+  e.currentTarget.textContent = quiet ? 'Back on the phones' : 'Do not disturb';
 };
 
 load();
