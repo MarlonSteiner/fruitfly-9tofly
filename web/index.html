@@ -93,12 +93,24 @@
           opacity:0;transition:opacity .2s}
   .stage.alert .status{opacity:1}
 
+  /* Narrow: the panel sits bottom-right, so the copy has to clear its full
+     height (about 210px) plus the gap, or the buttons end up underneath it. */
   @media (max-width:900px){
-    .brain{right:14px;bottom:14px;width:210px}
-    .copy{left:24px;bottom:240px;max-width:70%}
+    .brain{right:14px;bottom:14px;width:194px}
+    .brain .cwrap{height:104px}
+    .copy{left:24px;right:24px;bottom:252px;max-width:none}
+    .copy p{max-width:none}
+    h1{font-size:clamp(28px,7vw,40px)}
+    .actions{flex-wrap:wrap}
     .contact{display:none}
     header{padding:20px 24px}
     nav{display:none}
+  }
+  @media (max-width:560px){
+    .brain{width:160px}
+    .brain .cwrap{height:86px}
+    .copy{bottom:230px}
+    .copy p{font-size:13.5px}
   }
 </style>
 </head>
