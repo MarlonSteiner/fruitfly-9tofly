@@ -144,6 +144,53 @@ after a startle. Recurrent activity keeps the circuit firing after the drive
 stops, which is plausible for a real fly but reads as a stutter on screen. It
 gates the animation only, never the spike.
 
+## Does the wiring actually matter?
+
+This is the experiment the viral projects do not run, and it is the only thing
+that separates "we used the real connectome" from "the real connectome did the
+work". A flexible enough readout makes almost any recurrent network look
+purposeful — someone drove a fly body with a *worm* connectome and it worked
+fine.
+
+So: break the wiring in specific ways, keep everything else identical, and
+measure. `experiments/04_ablations.py`, 150 ms trials, detection threshold =
+lowest drive at which the Giant Fiber fires in ≥50% of trials.
+
+| network | threshold | false alarms | GF spikes @1.43 |
+|---|---|---|---|
+| **real connectome** | 0.96 | 0% | 14.0 |
+| weights shuffled | 0.96 | 0% | 26.0 |
+| **signs shuffled** | **1.52** | 0% | **0.0** |
+| inputs rewired | 0.96 | 0% | 23.6 |
+| fully random | 0.96 | 0% | 16.5 |
+
+Two findings, and the first is not flattering.
+
+**The topology is not doing the work.** Randomise which neuron connects to
+which — keeping in-degree and incoming strengths — and the circuit performs
+*identically*. Randomise everything and it still performs identically.
+Detecting a broad increase in drive does not require specific connectivity;
+any network that sums inputs and thresholds will do it. On this task, the
+809-neuron MaleCNS subgraph is not beating a random graph.
+
+**The signs are load-bearing.** Permute which neurons are inhibitory — keeping
+Dale's law, the same graph, the same magnitudes — and the circuit stops
+working. Threshold rises from 0.96 to 1.52 and the Giant Fiber produces zero
+spikes at the drive that fires the real circuit. The excitation/inhibition
+balance is what makes it function.
+
+That is worth sitting with. The part this project took from measured data
+(neurotransmitter-derived signs, 377/809 experimentally confirmed) is the part
+that matters. The part everyone advertises — the connectome graph itself — is
+not carrying this task.
+
+The honest caveat on the caveat: the drive here arrives at 302 looming neurons
+at once, which is broad and unstructured. That is the same limitation as the
+looming result above — without the optic lobe there is no spatiotemporal
+structure for the topology to exploit. Whether the wiring would matter on a
+task with real structure is untested, and this repository should not claim
+either way.
+
 ## Pipeline
 
 ```

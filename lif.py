@@ -44,12 +44,18 @@ class LIFNetwork:
     """
     W: np.ndarray
     p: LIFParams = field(default_factory=LIFParams)
+    sparse: bool = False
 
     def __post_init__(self):
         n = self.W.shape[0]
         row = np.abs(self.W).sum(axis=1, keepdims=True)
         row[row == 0] = 1.0
         self.Wn = (self.W / row).astype(np.float32)
+        if self.sparse:
+            # 21k non-zeros out of 654k cells, so the sparse product is ~30x
+            # less work. Matters when running hundreds of ablation trials.
+            from scipy.sparse import csr_matrix
+            self.Wn = csr_matrix(self.Wn)
 
         self.v = np.zeros(n, dtype=np.float32)
         self.i_syn = np.zeros(n, dtype=np.float32)
