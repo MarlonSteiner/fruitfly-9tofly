@@ -36,8 +36,9 @@ This is the part most projects in this genre skip.
 | Connection *strength* | **Assumed.** Synapse count is a proxy; the connectome does not measure physiological strength |
 | Time constants, delays, plasticity, neuromodulation | **Not modelled.** Not in the dataset |
 | Gap junctions | **Not modelled.** The connectome maps chemical synapses only |
-| Firing threshold, decay, gain | **Assumed.** Hand-tuned |
+| Membrane time constants, threshold voltage, synaptic gain | **Assumed.** Not in the dataset |
 | The fly's movement | **Assumed.** Keyframed animation, not physics |
+| *Whether* the Giant Fiber fires | **Emergent.** A spike when current outruns the leak — not a cutoff we picked |
 
 Two caveats worth stating plainly:
 
@@ -105,6 +106,44 @@ view. Every branch you see was reconstructed from electron microscopy.
 Each drawn skeleton is bound to a live neuron of the same role, so the
 morphology brightens with that cell's activity as the simulation runs.
 
+## The decision is a spike, not a cutoff
+
+The first version used a rate model and asked whether Giant Fiber "activity"
+exceeded a number we chose. That number was doing the deciding, which is
+precisely the move that makes these projects unfalsifiable.
+
+It is now leaky integrate-and-fire (`lif.py`). Each neuron holds a membrane
+voltage that leaks toward rest. Presynaptic spikes deliver signed current.
+Nothing happens until arriving current outruns the leak — and then the cell
+spikes and resets. `experiments/03_lif_threshold.py` measures the difference:
+
+```
+ LIF drive   GF (Hz)   | rate drive    GF out
+      0.98       0.0   |      0.020    0.0428
+      1.00       0.0   |      0.040    0.0761
+      1.02      50.5   |      0.070    0.1154
+      1.05      51.5   |      0.110    0.1548
+```
+
+A 2% change in input takes the LIF from silence to 50 Hz. Going from 10% to
+90% of maximum output needs **2.4x** more input under LIF and **26.7x** under
+the rate model — measured on a scale-free metric, so the two are comparable
+despite different input units. The decision is about **11x sharper**.
+
+In the demo the fly leaves its chair when the Giant Fiber *actually spikes*.
+Across 30 simulated seconds of idle on-call time it spikes zero times, so
+there are no false startles; an incident produces a burst at ~59 Hz.
+
+The time constants, threshold voltage and synaptic gain are still assumptions
+— the connectome does not contain them, and they stay in the grey column. What
+changed is that the *shape* of the decision now comes from the dynamics rather
+than from a constant we picked.
+
+One honest caveat: a settle counter suppresses re-triggering for ~45 frames
+after a startle. Recurrent activity keeps the circuit firing after the drive
+stops, which is plausible for a real fly but reads as a stutter on screen. It
+gates the animation only, never the spike.
+
 ## Pipeline
 
 ```
@@ -141,13 +180,15 @@ is only needed to rebuild from source.
 
 ## Status
 
-Working: circuit extraction with data-derived signs, live browser simulation,
-MuJoCo renders, startle driven by the real signal.
+Working: circuit extraction with data-derived signs, leaky integrate-and-fire
+simulation in the browser at 1 kHz, traced neuron morphology, MuJoCo renders,
+and a startle driven by real Giant Fiber spikes.
 
-Next: leaky integrate-and-fire with a real spiking threshold, to move the
-decision from the assumed column to the measured one. Then control ablations —
-shuffled connectome, random network with matched statistics — so the question
-"is the wiring doing anything?" has a number rather than an opinion.
+Next: control ablations — shuffled connectome, random network with matched
+statistics, and a *C. elegans* connectome driving the same body — so the
+question "is the wiring doing anything?" has a number rather than an opinion.
+That is the one experiment none of the viral projects run, and until it does,
+this README should not claim the wiring matters.
 
 ## Credit
 
