@@ -41,6 +41,11 @@
   .mark span{color:var(--muted);font-weight:400}
   .grow{flex:1}
   nav{display:flex;gap:30px;font-size:13.5px;color:var(--muted)}
+  .contact{margin-left:30px;display:inline-flex;align-items:center;gap:11px;
+           text-decoration:none;color:var(--fg);font-size:13.5px;font-weight:500;
+           border:1px solid var(--line);border-radius:999px;padding:10px 18px;
+           transition:background .18s,border-color .18s;white-space:nowrap}
+  .contact:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.32)}
   nav b{color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums}
 
   /* ---- headline block, bottom left ---- */
@@ -64,7 +69,7 @@
          display:grid;place-items:center;font-size:10px;opacity:.85}
 
   /* ---- brain panel, bottom right ---- */
-  .brain{position:absolute;right:44px;bottom:52px;z-index:6;width:330px;
+  .brain{position:absolute;right:44px;bottom:52px;z-index:6;width:400px;
          background:rgba(8,9,11,.82);backdrop-filter:blur(14px);
          border:1px solid var(--line);border-radius:12px;overflow:hidden}
   .brain .bar{display:flex;align-items:baseline;gap:8px;
@@ -72,7 +77,7 @@
   .brain .ttl{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
   .brain .val{margin-left:auto;font-family:var(--mono);font-size:19px;
               font-variant-numeric:tabular-nums;color:var(--amber);line-height:1}
-  .brain .cwrap{position:relative;height:172px}
+  .brain .cwrap{position:relative;height:250px}
   .brain canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
   #trace{height:40px;border-top:1px solid rgba(255,255,255,.08)}
   .brain .foot{display:flex;gap:14px;padding:10px 16px 12px;font-size:10px;
@@ -88,8 +93,9 @@
   .stage.alert .status{opacity:1;color:var(--amber)}
 
   @media (max-width:900px){
-    .brain{right:20px;bottom:20px;width:250px}
-    .copy{left:24px;bottom:210px;max-width:60%}
+    .brain{right:16px;bottom:16px;width:270px}
+    .copy{left:24px;bottom:300px;max-width:70%}
+    .contact{display:none}
     header{padding:20px 24px}
     nav{display:none}
   }
@@ -111,6 +117,9 @@
       <span><b id="s-edges">—</b> connections</span>
       <span><b id="s-nt">—</b> measured transmitters</span>
     </nav>
+    <a class="contact" href="https://marlonsteiner.studio" target="_blank" rel="noopener">
+      Connect with the developer <span class="arrow">&rarr;</span>
+    </a>
   </header>
 
   <div class="status" id="status">Giant Fiber fired</div>
@@ -159,6 +168,7 @@ const FRAME_HOLD = 3;          // render frames held per animation frame
 let N=0, pre, post, wgt, neurons=[];
 let x, act, loomIdx=[], gfIdx=[];
 let gf=0, trace=new Array(200).fill(0);
+let cells=[], extent=[1,1];
 let fireTimer=0, fired=false, jumps=0;
 let quiet=false, incident=0;
 
@@ -178,10 +188,13 @@ function preload(){
 }
 
 async function load(){
-  const [data] = await Promise.all([
+  const [data, skel] = await Promise.all([
     fetch('circuit.json').then(r=>r.json()),
+    fetch('skeletons.json').then(r=>r.json()).catch(()=>({cells:[]})),
     preload(),
   ]);
+  cells = skel.cells || [];
+  extent = skel.extent || [1,1];
   neurons = data.neurons; N = neurons.length;
 
   const E = data.edges.length;
@@ -192,6 +205,18 @@ async function load(){
   neurons.forEach((n,i)=>{
     if(n.r==='looming') loomIdx.push(i);
     if(n.r==='command') gfIdx.push(i);
+  });
+
+  // Each drawn skeleton is bound to a real neuron of the same role, so the
+  // morphology you see flickers with that cell's actual activity.
+  const pool = {
+    looming: loomIdx,
+    command: gfIdx,
+    inhibitory: neurons.map((n,i)=>n.s<0?i:-1).filter(i=>i>=0),
+  };
+  cells.forEach(c=>{
+    const p = pool[c.r] && pool[c.r].length ? pool[c.r] : loomIdx;
+    c.i = p[Math.floor(Math.random()*p.length)];
   });
 
   document.getElementById('s-neurons').textContent = data.meta.neurons;
@@ -253,17 +278,31 @@ addEventListener('resize', sizeCanvases);
 function drawBrain(){
   const w=bRect.width,h=bRect.height;
   bctx.clearRect(0,0,w,h);
-  const pad=16, sw=w-pad*2, sh=h-pad*2;
-  for(let i=0;i<N;i++){
-    const n=neurons[i], a=Math.abs(act[i]), isGF=n.r==='command';
-    const px=pad+n.x*sw, py=pad+(1-n.y)*sh;
-    const col = isGF ? '255,178,36' : n.s>0 ? '61,220,132' : n.s<0 ? '255,99,99' : '110,120,132';
-    bctx.beginPath(); bctx.arc(px,py,isGF?3:1.1,0,6.2832);
-    bctx.fillStyle=`rgba(${col},${0.12+a*0.88})`; bctx.fill();
-    if(a>0.3){
-      bctx.beginPath(); bctx.arc(px,py,(isGF?8:3.4)*a,0,6.2832);
-      bctx.fillStyle=`rgba(${col},${a*0.15})`; bctx.fill();
+  if(!cells.length) return;
+
+  // fit the CNS into the panel without distorting it
+  const pad=14, aw=w-pad*2, ah=h-pad*2;
+  const k=Math.min(aw/extent[0], ah/extent[1]);
+  const ox=(w-extent[0]*k)/2, oy=(h-extent[1]*k)/2;
+  const sx=v=>ox+v*k, sy=v=>oy+(extent[1]-v)*k;
+
+  bctx.lineCap='round';
+  for(const c of cells){
+    const a=Math.abs(act[c.i]||0);
+    const col = c.r==='command' ? '255,178,36'
+              : c.r==='inhibitory' ? '255,96,96'
+              : '86,214,255';
+    bctx.beginPath();
+    const seg=c.s;
+    for(let j=0;j<seg.length;j++){
+      const q=seg[j];
+      bctx.moveTo(sx(q[0]),sy(q[1]));
+      bctx.lineTo(sx(q[2]),sy(q[3]));
     }
+    const lit = c.r==='command' ? 0.30+a*0.70 : 0.10+a*0.85;
+    bctx.strokeStyle=`rgba(${col},${lit})`;
+    bctx.lineWidth = c.r==='command' ? 1.5+a*1.6 : 0.65+a*0.7;
+    bctx.stroke();
   }
 }
 function drawTrace(){

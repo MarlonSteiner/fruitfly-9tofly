@@ -20,9 +20,12 @@ Produced by:
 
 Licensed **CC-BY**. <https://male-cns.janelia.org/>
 
-`web/circuit.json` in this repository is a derivative of that dataset: an
-809-neuron subgraph with signs applied. It is redistributed here under CC-BY
-with the attribution above.
+Two files in this repository are derivatives of that dataset, redistributed
+under CC-BY with the attribution above:
+
+- `web/circuit.json` — an 809-neuron subgraph with signs applied.
+- `web/skeletons.json` — 62 traced neuron morphologies, decimated and
+  projected to 2D.
 
 ## flybody — Apache-2.0
 

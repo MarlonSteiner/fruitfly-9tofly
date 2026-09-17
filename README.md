@@ -93,6 +93,18 @@ So the honest claim is narrower than "the fly sees and jumps":
 Which is why the fly's job here is monitoring. A threshold detector is used as
 a threshold detector.
 
+## The brain panel
+
+The neurons in the corner panel are real traced morphologies, not a diagram.
+`extract_skeletons.py` pulls 62 reconstructed skeletons from
+`gs://flyem-male-cns/v1.0/segmentation/skeletons-malecns/` -- the Giant Fibers,
+a sample of LC4 and LPLC2, and the strongest GABAergic and glutamatergic
+inputs -- decimates each to ~260 segments, and projects them to a frontal
+view. Every branch you see was reconstructed from electron microscopy.
+
+Each drawn skeleton is bound to a live neuron of the same role, so the
+morphology brightens with that cell's activity as the simulation runs.
+
 ## Pipeline
 
 ```
@@ -100,6 +112,7 @@ MaleCNS v1.0 (Feather, ~550 MB)
   -> extract_circuit.py   seed DNp01, recruit inputs, sign edges from
                           neurotransmitters, threshold at 5 synapses
   -> export_web.py        pack to 412 KB with real soma coordinates
+  -> extract_skeletons.py 62 traced morphologies -> 447 KB of line segments
   -> web/                 browser runs the circuit live; no API key, no account
 ```
 
@@ -118,6 +131,7 @@ make venv     # dependencies
 make data     # MaleCNS downloads, ~550 MB, public, no account needed
 make model    # flybody model, ~140 MB
 make circuit  # -> web/circuit.json
+make skels    # -> web/skeletons.json
 make frames   # -> web/frames/
 make web      # http://localhost:8777
 ```

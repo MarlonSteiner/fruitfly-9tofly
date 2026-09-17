@@ -1,15 +1,16 @@
-.PHONY: help venv data model circuit frames web clean
+.PHONY: help venv data model circuit skels frames web clean
 
 help:
 	@echo "make venv     - create .venv and install dependencies"
 	@echo "make data     - download MaleCNS v1.0 files (~550 MB)"
 	@echo "make model    - clone the flybody MuJoCo model (~140 MB)"
 	@echo "make circuit  - extract the circuit -> web/circuit.json"
+	@echo "make skels    - fetch neuron skeletons -> web/skeletons.json"
 	@echo "make frames   - render the fly -> web/frames/"
 	@echo "make web      - serve the demo at http://localhost:8777"
 	@echo "make all      - everything, in order"
 
-all: venv data model circuit frames
+all: venv data model circuit skels frames
 
 PY := .venv/bin/python
 BASE := https://storage.googleapis.com/flyem-male-cns/v1.0/connectome-data/flat-connectome
@@ -35,6 +36,9 @@ circuit:
 	$(PY) extract_circuit.py
 	$(PY) export_web.py
 
+skels:
+	$(PY) extract_skeletons.py
+
 frames:
 	$(PY) render_frames.py
 
@@ -42,4 +46,4 @@ web:
 	cd web && python3 -m http.server 8777
 
 clean:
-	rm -rf data/circuit web/frames renders __pycache__
+	rm -rf data/circuit data/skeletons web/frames renders __pycache__

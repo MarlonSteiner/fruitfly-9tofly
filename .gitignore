@@ -4,8 +4,9 @@ scenes/assets
 
 # Raw connectome downloads (~550 MB) - fetched by `make data`
 data/raw/
-# Intermediate extraction output - rebuilt by `make circuit`
+# Intermediate extraction output - rebuilt by `make circuit` / `make skels`
 data/circuit/
+data/skeletons/
 
 # Python
 .venv/

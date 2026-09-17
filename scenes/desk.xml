@@ -27,9 +27,11 @@
     <material name="floor_mat"  rgba="0.08 0.09 0.11 1" reflectance="0.14" specular="0.25" shininess="0.35"/>
     <material name="desk_mat"   rgba="0.24 0.18 0.13 1" reflectance="0.06" specular="0.3"  shininess="0.4"/>
     <material name="metal_mat"  rgba="0.15 0.16 0.19 1" reflectance="0.28" specular="0.65" shininess="0.75"/>
-    <material name="chair_mat"  rgba="0.12 0.13 0.16 1" reflectance="0.05" specular="0.25" shininess="0.25"/>
+    <material name="chair_mat"  rgba="0.055 0.062 0.078 1" reflectance="0.04" specular="0.18" shininess="0.2"/>
     <material name="shell_mat"  rgba="0.24 0.25 0.29 1" reflectance="0.32" specular="0.7"  shininess="0.8"/>
     <material name="screen_mat" rgba="0.30 0.56 0.78 1" emission="0.42" specular="0.1"/>
+    <material name="paper_mat" rgba="0.86 0.85 0.82 1" specular="0.12" shininess="0.1"/>
+    <material name="paper_edge" rgba="0.70 0.69 0.66 1" specular="0.1" shininess="0.1"/>
     <material name="mug_mat"    rgba="0.58 0.22 0.17 1" specular="0.4"  shininess="0.45"/>
   </asset>
 
@@ -38,8 +40,10 @@
            specular="0.28 0.28 0.28" castshadow="true"/>
     <light name="fill"  pos="-0.85 0.85 0.55" dir="0.55 -0.55 -0.45" diffuse="0.50 0.58 0.74"
            specular="0.05 0.05 0.05" castshadow="false"/>
-    <light name="spill" pos="0.33 0 0.03"     dir="-1 0 -0.3" diffuse="0.62 0.86 1.10"
+    <light name="spill" pos="0.30 0 0.02"  dir="-1 0 -0.25" diffuse="0.62 0.86 1.10"
            specular="0.1 0.1 0.1" castshadow="false"/>
+    <light name="glow"  pos="0.26 0 0.05"  dir="-1 0 -0.15" diffuse="0.40 0.60 0.85"
+           specular="0.3 0.3 0.3" castshadow="false" cutoff="70" exponent="1"/>
 
     <geom name="floor" type="plane" size="8 8 0.1" pos="0 0 -0.78" material="floor_mat"/>
 
@@ -80,6 +84,16 @@
       <geom name="cast_c"    type="sphere"   size="0.018" pos="-0.10 -0.175 -0.518" material="metal_mat"/>
       <geom name="cast_d"    type="sphere"   size="0.018" pos="0.06 0.20 -0.518" material="metal_mat"/>
       <geom name="cast_e"    type="sphere"   size="0.018" pos="0.06 -0.20 -0.518" material="metal_mat"/>
+    </body>
+
+    <!-- ===== the paperwork ===== -->
+    <body name="paper" pos="0.40 0.28 -0.040">
+      <geom name="pg1" type="box" size="0.080 0.100 0.0016" pos="0 0 0.000"  euler="0 0 0.05"  material="paper_mat"/>
+      <geom name="pg2" type="box" size="0.080 0.100 0.0016" pos="0.003 -0.004 0.0034" euler="0 0 -0.04" material="paper_edge"/>
+      <geom name="pg3" type="box" size="0.080 0.100 0.0016" pos="-0.002 0.003 0.0068" euler="0 0 0.07" material="paper_mat"/>
+      <geom name="pg4" type="box" size="0.080 0.100 0.0016" pos="0.005 0.002 0.0102" euler="0 0 -0.02" material="paper_edge"/>
+      <geom name="pg5" type="box" size="0.080 0.100 0.0016" pos="-0.004 -0.003 0.0136" euler="0 0 0.09" material="paper_mat"/>
+      <geom name="pg6" type="box" size="0.078 0.098 0.0016" pos="0.002 0.005 0.0170" euler="0 0 -0.06" material="paper_mat"/>
     </body>
 
     <body name="mug" pos="0.62 -0.34 -0.012">

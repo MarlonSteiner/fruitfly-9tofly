@@ -18,7 +18,7 @@ import numpy as np
 SCENE = Path("scenes/desk.xml")
 OUT = Path("web/frames")
 
-W, H = 1920, 1080
+W, H = 1920, 1200   # 16:10 survives cover-cropping better than 16:9
 
 WORKING = {
     "coxa_T1_left": -0.88, "coxa_T1_right": -0.88,
@@ -46,7 +46,8 @@ STARTLED = {
     "wing_pitch_left": 0.8, "wing_pitch_right": -0.8,
 }
 
-CAM = dict(lookat=(0.20, 0.0, -0.055), dist=0.94, azim=-88, elev=-4)
+# Fly centred: a centred subject survives object-fit:cover at any aspect.
+CAM = dict(lookat=(0.060, 0.0, -0.045), dist=0.82, azim=-88, elev=-5)
 
 
 def camera(lookat, dist, azim, elev):
@@ -77,6 +78,21 @@ def blend(a, b, t):
     return {k: a.get(k, 0.0) * (1 - t) + b.get(k, 0.0) * t for k in keys}
 
 
+CALM  = dict(rgba=(0.30, 0.56, 0.78), emission=0.45, light=(0.62, 0.86, 1.10), glow=(0.40, 0.60, 0.85))
+ALERT = dict(rgba=(1.00, 0.62, 0.12), emission=1.00, light=(1.60, 0.95, 0.30), glow=(1.30, 0.70, 0.20))
+
+
+def set_screen(model, look):
+    """Recolour the laptop screen and the light it throws."""
+    mat = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_MATERIAL, "screen_mat")
+    model.mat_rgba[mat, :3] = look["rgba"]
+    model.mat_emission[mat] = look["emission"]
+    for name, key in (("spill", "light"), ("glow", "glow")):
+        lid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_LIGHT, name)
+        if lid >= 0:
+            model.light_diffuse[lid] = look[key]
+
+
 def main():
     model = mujoco.MjModel.from_xml_path(str(SCENE))
     data = mujoco.MjData(model)
@@ -86,6 +102,7 @@ def main():
         cam = camera(**CAM)
 
         # working
+        set_screen(model, CALM)
         pose(model, data, WORKING)
         r.update_scene(data, camera=cam)
         iio.imwrite(OUT / "working.jpg", r.render(), quality=92)
@@ -95,7 +112,14 @@ def main():
         n = 14
         for i in range(n):
             t = i / (n - 1)
-            lift = np.sin(min(1.0, t * 1.25) * np.pi) * 0.17
+            # screen flares hard at the incident, then settles back
+            flare = min(1.0, t * 3.0) * (1.0 - max(0.0, (t - 0.55) / 0.45) * 0.55)
+            set_screen(model, {
+                k: tuple(np.array(CALM[k]) * (1 - flare) + np.array(ALERT[k]) * flare)
+                if isinstance(CALM[k], tuple) else CALM[k] * (1 - flare) + ALERT[k] * flare
+                for k in CALM
+            })
+            lift = np.sin(min(1.0, t * 1.25) * np.pi) * 0.105
             amount = min(1.0, t * 2.2)
             pose(
                 model, data,
