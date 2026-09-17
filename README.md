@@ -254,6 +254,21 @@ make web      # http://localhost:8777
 `web/` is committed, so `make web` alone is enough to see the demo. The rest
 is only needed to rebuild from source.
 
+## Work in progress
+
+**Next: its own SIM card, so it can start cold-calling the scammers back.**
+
+The pieces are already here. The Giant Fiber is a threshold detector, the fly's
+ear is wired to it, and the circuit reliably fires on a ring and stays silent
+otherwise. Point it at a real line instead of a button and the fruit fly has a
+job that pays for itself in satisfaction.
+
+Two honest notes before anyone builds it. Auto-dialling is regulated in most
+places — the TCPA in the US, PECR in the UK — and "it was the fly's idea" is
+not a defence, so a real version wants a human in the loop. And per the
+ablation above, the ear contributes 1.7% of Giant Fiber input, so a ring alone
+does not fire it. The fruit fly would need to *see* the phone light up too.
+
 ## Status
 
 Working: circuit extraction with data-derived signs, leaky integrate-and-fire

@@ -37,8 +37,11 @@
   /* ---- header ---- */
   header{position:absolute;top:0;left:0;right:0;z-index:5;
          display:flex;align-items:center;gap:36px;padding:30px 44px}
-  .mark{font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .mark{font-size:17px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
   .mark span{color:var(--muted);font-weight:400}
+  .wip{font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+       color:var(--amber);border:1px solid rgba(255,178,36,.34);
+       border-radius:999px;padding:4px 10px;white-space:nowrap}
   .grow{flex:1}
   nav{display:flex;gap:30px;font-size:13.5px;color:var(--muted)}
   .contact{margin-left:30px;display:inline-flex;align-items:center;gap:11px;
@@ -56,6 +59,9 @@
      font-weight:700;letter-spacing:-.025em}
   .copy p{margin:0 0 28px;font-size:14.5px;line-height:1.62;color:var(--muted);
           max-width:430px}
+  .roadmap{margin:0 0 20px;font-size:13px;line-height:1.55;color:var(--dim);
+           max-width:400px;border-left:1px solid rgba(255,178,36,.3);
+           padding-left:13px}
   .actions{display:flex;gap:12px;align-items:center}
   button{appearance:none;background:transparent;color:var(--fg);
          border:1px solid var(--line);border-radius:999px;
@@ -93,6 +99,10 @@
           opacity:0;transition:opacity .2s}
   .stage.alert .status{opacity:1}
 
+  /* The wordmark, the tag, the stats and the link stop fitting together
+     around 1100px. Drop the stats first -- they are the least load-bearing. */
+  @media (max-width:1100px){ nav{display:none} }
+
   /* Narrow: the panel sits bottom-right, so the copy has to clear its full
      height (about 210px) plus the gap, or the buttons end up underneath it. */
   @media (max-width:900px){
@@ -103,6 +113,7 @@
     h1{font-size:clamp(28px,7vw,40px)}
     .actions{flex-wrap:wrap}
     .contact{display:none}
+    .roadmap{display:none}
     header{padding:20px 24px}
     nav{display:none}
   }
@@ -124,6 +135,7 @@
 
   <header>
     <div class="mark">9 to Fly</div>
+    <span class="wip">Work in progress</span>
     <div class="grow"></div>
     <nav>
       <span><b id="s-neurons">—</b> neurons</span>
@@ -143,6 +155,9 @@
        puts 709 synapses onto its Giant Fiber, the neuron that fires the escape
        jump. So when the phone rings, it genuinely startles. That neuron is why
        you miss when you swat.</p>
+    <p class="roadmap">Next: its own SIM card, so it can start cold-calling
+       the scammers back.</p>
+
     <div class="actions">
       <button class="primary" id="btn-incident">
         Ring the phone <span class="arrow">&rarr;</span>
