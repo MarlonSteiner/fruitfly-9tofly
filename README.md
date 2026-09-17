@@ -3,12 +3,14 @@
 **9 to Fly** — a fruit fly works in sales. The phone rings, its Giant Fiber
 fires, and it leaves the chair.
 
-![The fly at its desk](web/frames/working.jpg)
+**[Try it →](https://marlonsteiner.github.io/fruitfly-9tofly/)**
+
+![The fruit fly at its desk](web/frames/working.jpg)
 
 The fly is the real anatomical [flybody](https://github.com/google-deepmind/mujoco_menagerie/tree/main/flybody)
 model from Google DeepMind and HHMI Janelia, rendered in MuJoCo. The brain is
 809 real neurons from [MaleCNS v1.0](https://male-cns.janelia.org/), wired the
-way they are in an actual fly. The startle happens when excitation genuinely
+way they are in an actual fruit fly. The startle happens when excitation genuinely
 outruns inhibition in that circuit.
 
 ## Why the Giant Fiber
@@ -37,7 +39,7 @@ This is the part most projects in this genre skip.
 | Time constants, delays, plasticity, neuromodulation | **Not modelled.** Not in the dataset |
 | Gap junctions | **Not modelled.** The connectome maps chemical synapses only |
 | Membrane time constants, threshold voltage, synaptic gain | **Assumed.** Not in the dataset |
-| The fly's movement | **Assumed.** Keyframed animation, not physics |
+| The fruit fly's movement | **Assumed.** Keyframed animation, not physics |
 | *Whether* the Giant Fiber fires | **Emergent.** A spike when current outruns the leak — not a cutoff we picked |
 
 Two caveats worth stating plainly:
@@ -85,20 +87,20 @@ Had we only run the looming condition, Giant Fiber activity would have climbed
 from 0 to 0.99 right as the object approached and it would have looked like a
 success. The control is the only reason we know it was meaningless.
 
-So the honest claim is narrower than "the fly sees and jumps":
+So the honest claim is narrower than "the fruit fly sees and jumps":
 
 > The connectome does the **integration and gating** — weighing excitation
 > against inhibition to decide whether to fire. It does **not** do the
 > perception.
 
-Which is why the fly's job here is monitoring. A threshold detector is used as
+Which is why the fruit fly's job here is monitoring. A threshold detector is used as
 a threshold detector.
 
 ## Why a ringing phone
 
-Johnston's Organ is the fly's ear. Twenty of its neurons sit inside this
-circuit and put **709 synapses directly onto the Giant Fiber**, so a fly
-startling at a sudden noise and a fly startling at a shadow are the same
+Johnston's Organ is the fruit fly's ear. Twenty of its neurons sit inside this
+circuit and put **709 synapses directly onto the Giant Fiber**, so a fruit
+fly startling at a sudden noise and one startling at a shadow are the same
 circuit doing the same thing. That is why cold calling works as a framing and
 not just as a joke.
 
@@ -117,7 +119,7 @@ A desk phone is also a visible event — a blinking light, a handset that moves,
 a surface that buzzes — so the ring drives the visual channel as well, and that
 is what actually crosses threshold. Stated plainly because it would be easy to
 imply the sound is doing the work when it is not. The limitation is uniform
-synaptic gain here, not a claim about real flies: a real fly does escape from
+synaptic gain here, not a claim about real fruit flies: a real one does escape from
 sound.
 
 ## The brain panel
@@ -158,7 +160,7 @@ A 2% change in input takes the LIF from silence to 50 Hz. Going from 10% to
 the rate model — measured on a scale-free metric, so the two are comparable
 despite different input units. The decision is about **11x sharper**.
 
-In the demo the fly leaves its chair when the Giant Fiber *actually spikes*.
+In the demo the fruit fly leaves its chair when the Giant Fiber *actually spikes*.
 Across 30 simulated seconds of idle on-call time it spikes zero times, so
 there are no false startles; an incident produces a burst at ~59 Hz.
 
@@ -169,7 +171,7 @@ than from a constant we picked.
 
 One honest caveat: a settle counter suppresses re-triggering for ~45 frames
 after a startle. Recurrent activity keeps the circuit firing after the drive
-stops, which is plausible for a real fly but reads as a stutter on screen. It
+stops, which is plausible for a real fruit fly but reads as a stutter on screen. It
 gates the animation only, never the spike.
 
 ## Does the wiring actually matter?
@@ -234,7 +236,7 @@ Per frame the browser walks 21,086 edges rather than an 809×809 matrix.
 
 ```
 flybody (MuJoCo, Apache-2.0)
-  -> scenes/desk.xml      desk, chair, laptop proportioned to the fly
+  -> scenes/desk.xml      desk, chair, laptop proportioned to the fruit fly
   -> render_frames.py     working pose + 14-frame startle
 ```
 
@@ -258,13 +260,13 @@ is only needed to rebuild from source.
 
 **Next: its own SIM card, so it can start cold-calling the scammers back.**
 
-The pieces are already here. The Giant Fiber is a threshold detector, the fly's
+The pieces are already here. The Giant Fiber is a threshold detector, the fruit fly's
 ear is wired to it, and the circuit reliably fires on a ring and stays silent
 otherwise. Point it at a real line instead of a button and the fruit fly has a
 job that pays for itself in satisfaction.
 
 Two honest notes before anyone builds it. Auto-dialling is regulated in most
-places — the TCPA in the US, PECR in the UK — and "it was the fly's idea" is
+places — the TCPA in the US, PECR in the UK — and "it was the fruit fly's idea" is
 not a defence, so a real version wants a human in the loop. And per the
 ablation above, the ear contributes 1.7% of Giant Fiber input, so a ring alone
 does not fire it. The fruit fly would need to *see* the phone light up too.
